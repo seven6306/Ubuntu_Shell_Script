@@ -1,5 +1,7 @@
 #!/bin/bash
 #!file_name scan_port_cpu.sh
+ScriptPID=$$
+ScriptName=$0
 today=$(date +%F-%H%M%S)
 Now=$(date)
 Nmaplogfile=/opt/diamond/nmap_logfile
@@ -19,8 +21,6 @@ if [ -f "${Nmaplogfile}/nmap_quick_${today}" ] ;then
 else
     touch /opt/diamond/nmap_logfile/nmap_quick_${today} && chmod 777 *
 fi
-
-
 if [ -f "${Nmaplogfile}/nmap_full_${today}" ] ;then
      echo "file exist"
      break
@@ -40,7 +40,6 @@ do
    esac
 done
 [ `echo $ver | egrep -c "^[46]$"` -eq 0 ] && echo "Version ERROR" && exit
-
 cpu_box(){
 	val1=$1
 	while :
@@ -51,6 +50,18 @@ cpu_box(){
 		echo " $(date "+%FT%T"),  $top_op"  >>"${Cpulogfile}/${val1}_nmap_usage"
 		./cpu_sample >>"${Cpulogfile}/${val1}_cpu_usage" 
 		sleep 1
+	done
+}
+CleanReservedPID()
+{
+	# This will kill the background process, and it also kill subprocess
+	# pid from the script to avoid currently script pid. 
+	[ ! -z $1 ] && kill $1
+	for each_process in `ps -ef | grep "$ScriptName" | awk '{print $2}'`
+	do
+		if [ "$each_process" != "$ScriptPID" -a ! -z $each_process ]; then
+			kill -9 $each_process
+		fi
 	done
 }
 while :
@@ -118,8 +129,7 @@ EOF
      echo $Now >> "${Nmaplogfile}/nmap_full_${today}"
      echo $ENDTIME >> "${Nmaplogfile}/nmap_full_${today}"
 	 sleep 2
-	 # This will kill the background process
-	 kill $!
+	 CleanReservedPID $!
     ;;
 
   2)
@@ -173,7 +183,7 @@ EOF
      echo $Now >> "${Nmaplogfile}/nmap_${today}"
      echo $ENDTIME >> "${Nmaplogfile}/nmap_normal_${today}"
 	 sleep 2
-	 kill $!
+	 CleanReservedPID $!
     ;;
  
    3)
@@ -227,7 +237,7 @@ EOF
      echo $Now >> "${Nmaplogfile}/nmap_quick_${today}"
 	 echo $ENDTIME >> "${Nmaplogfile}/nmap_quick_${today}"
 	 sleep 2
-	 kill $!
+	 CleanReservedPID $!
 	 ;;
 	 4 ) exit;;
 	 * ) echo "Invalid option.";;
