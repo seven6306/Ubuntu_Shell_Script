@@ -1,7 +1,7 @@
 # Ubuntu_Shell_Script
 Develop shell together
 
-# NOTE : - ![#f03c15]
+# NOTE : - ![#f03c15](https://placehold.it/15/f03c15/000000?text=+) Very Important
 ## Need to do follow things first (Require Internet Connection)
 
 1. Run requirements setup script "setup.py",
