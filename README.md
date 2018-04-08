@@ -1,7 +1,7 @@
 # Ubuntu_Shell_Script
 Develop shell together
 
-# NOTE : ![#f03c15]Very Important`#f03c15`
+# NOTE : ![#f03c15](Very Important) `#f03c15`
 ## Need to do follow things first (Require Internet Connection)
 
 1. Run requirements setup script "setup.py",
